@@ -3,7 +3,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-if not player then return end
+if not player then
+	return
+end
 
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -18,7 +20,8 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(280, 130)
+frame.Name = "MainFrame"
+frame.Size = UDim2.fromOffset(300, 140)
 frame.Position = UDim2.fromScale(0.5, 0.45)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -26,7 +29,8 @@ frame.BorderSizePixel = 0
 frame.Parent = screenGui
 
 local titleBar = Instance.new("TextButton")
-titleBar.Size = UDim2.fromOffset(280, 30)
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.fromOffset(300, 30)
 titleBar.Position = UDim2.fromOffset(0, 0)
 titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 titleBar.BorderSizePixel = 0
@@ -36,8 +40,9 @@ titleBar.TextSize = 16
 titleBar.Parent = frame
 
 local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
 closeButton.Size = UDim2.fromOffset(30, 30)
-closeButton.Position = UDim2.fromOffset(250, 0)
+closeButton.Position = UDim2.fromOffset(270, 0)
 closeButton.BackgroundColor3 = Color3.fromRGB(140, 40, 40)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "X"
@@ -46,7 +51,8 @@ closeButton.TextSize = 16
 closeButton.Parent = frame
 
 local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.fromOffset(240, 42)
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.fromOffset(260, 45)
 toggleButton.Position = UDim2.fromOffset(20, 48)
 toggleButton.BackgroundColor3 = Color3.fromRGB(140, 50, 50)
 toggleButton.BorderSizePixel = 0
@@ -56,8 +62,9 @@ toggleButton.TextSize = 18
 toggleButton.Parent = frame
 
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.fromOffset(240, 22)
-statusLabel.Position = UDim2.fromOffset(20, 97)
+statusLabel.Name = "StatusLabel"
+statusLabel.Size = UDim2.fromOffset(260, 24)
+statusLabel.Position = UDim2.fromOffset(20, 102)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Prêt"
 statusLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -65,14 +72,10 @@ statusLabel.TextSize = 14
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.Parent = frame
 
-closeButton.MouseButton1Click:Connect(function()
-	screenGui:Destroy()
-end)
-
 local dragging = false
-local dragStart
-local startPos
-local dragInput
+local dragInput = nil
+local dragStart = nil
+local startPos = nil
 
 titleBar.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -114,7 +117,28 @@ local ballKick = network:WaitForChild("rev_ballKick")
 local running = false
 local loopThread = nil
 
+local function stopLoop()
+	running = false
+	toggleButton.Text = "Loop OFF"
+	toggleButton.BackgroundColor3 = Color3.fromRGB(140, 50, 50)
+	statusLabel.Text = "Loop arrêtée"
+
+	if loopThread then
+		task.cancel(loopThread)
+		loopThread = nil
+	end
+end
+
 local function startLoop()
+	if running then
+		return
+	end
+
+	running = true
+	toggleButton.Text = "Loop ON"
+	toggleButton.BackgroundColor3 = Color3.fromRGB(50, 140, 70)
+	statusLabel.Text = "Loop démarrée"
+
 	loopThread = task.spawn(function()
 		while running do
 			for i = 100, 0, -1 do
@@ -133,21 +157,14 @@ local function startLoop()
 end
 
 toggleButton.MouseButton1Click:Connect(function()
-	running = not running
-
 	if running then
-		toggleButton.Text = "Loop ON"
-		toggleButton.BackgroundColor3 = Color3.fromRGB(50, 140, 70)
-		statusLabel.Text = "Loop démarrée"
-		startLoop()
+		stopLoop()
 	else
-		toggleButton.Text = "Loop OFF"
-		toggleButton.BackgroundColor3 = Color3.fromRGB(140, 50, 50)
-		statusLabel.Text = "Loop arrêtée"
-
-		if loopThread then
-			task.cancel(loopThread)
-			loopThread = nil
-		end
+		startLoop()
 	end
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+	stopLoop()
+	screenGui:Destroy()
 end)
