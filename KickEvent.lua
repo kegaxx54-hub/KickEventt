@@ -174,15 +174,18 @@ teleportButton.MouseButton1Click:Connect(function()
 	end
 
 	local character = getCharacter()
-	if character then
-		character:PivotTo(savedCheckpoint)
-		statusLabel.Text = "Téléporté au checkpoint"
-	end
+	character:PivotTo(savedCheckpoint)
+	statusLabel.Text = "Téléporté au checkpoint"
 end)
 
 local function runSequence()
 	if running then
 		statusLabel.Text = "Déjà en cours"
+		return
+	end
+
+	if not savedCheckpoint then
+		statusLabel.Text = "Sauve un checkpoint d'abord"
 		return
 	end
 
@@ -195,10 +198,9 @@ local function runSequence()
 	local kickEvent = network:WaitForChild("rev_KickEvent")
 	local ballKick = network:WaitForChild("rev_ballKick")
 
-	statusLabel.Text = "TP avant tir"
-	local hrp = getRootPart()
-	local currentPos = hrp.Position
-	hrp.CFrame = CFrame.new(702.90, currentPos.Y, currentPos.Z) * (hrp.CFrame - hrp.Position)
+	statusLabel.Text = "TP checkpoint..."
+	local character = getCharacter()
+	character:PivotTo(savedCheckpoint)
 
 	task.wait(0.2)
 
