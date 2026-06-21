@@ -21,8 +21,8 @@ screenGui.Parent = playerGui
 
 local frame = Instance.new("Frame")
 frame.Name = "MainFrame"
-frame.Size = UDim2.fromOffset(300, 140)
-frame.Position = UDim2.fromScale(0.5, 0.45)
+frame.Size = UDim2.new(0, 300, 0, 140)
+frame.Position = UDim2.new(0.5, 0, 0.45, 0)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 frame.BorderSizePixel = 0
@@ -30,8 +30,8 @@ frame.Parent = screenGui
 
 local titleBar = Instance.new("TextButton")
 titleBar.Name = "TitleBar"
-titleBar.Size = UDim2.fromOffset(300, 30)
-titleBar.Position = UDim2.fromOffset(0, 0)
+titleBar.Size = UDim2.new(1, 0, 0, 30)
+titleBar.Position = UDim2.new(0, 0, 0, 0)
 titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 titleBar.BorderSizePixel = 0
 titleBar.Text = "BallKick Loop"
@@ -41,8 +41,8 @@ titleBar.Parent = frame
 
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.fromOffset(30, 30)
-closeButton.Position = UDim2.fromOffset(270, 0)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -30, 0, 0)
 closeButton.BackgroundColor3 = Color3.fromRGB(140, 40, 40)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "X"
@@ -52,8 +52,8 @@ closeButton.Parent = frame
 
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.fromOffset(260, 45)
-toggleButton.Position = UDim2.fromOffset(20, 48)
+toggleButton.Size = UDim2.new(0, 260, 0, 45)
+toggleButton.Position = UDim2.new(0, 20, 0, 48)
 toggleButton.BackgroundColor3 = Color3.fromRGB(140, 50, 50)
 toggleButton.BorderSizePixel = 0
 toggleButton.Text = "Loop OFF"
@@ -63,8 +63,8 @@ toggleButton.Parent = frame
 
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "StatusLabel"
-statusLabel.Size = UDim2.fromOffset(260, 24)
-statusLabel.Position = UDim2.fromOffset(20, 102)
+statusLabel.Size = UDim2.new(0, 260, 0, 24)
+statusLabel.Position = UDim2.new(0, 20, 0, 102)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Prêt"
 statusLabel.TextColor3 = Color3.new(1, 1, 1)
