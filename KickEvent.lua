@@ -31,7 +31,7 @@ titleBar.Size = UDim2.fromOffset(320, 30)
 titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 titleBar.BorderSizePixel = 0
 titleBar.Text = "Kick Event Menu"
-titleBar.TextColor3 = Color3.new(1,1,1)
+titleBar.TextColor3 = Color3.new(1, 1, 1)
 titleBar.TextSize = 16
 titleBar.Parent = frame
 
@@ -41,7 +41,7 @@ closeButton.Position = UDim2.fromOffset(290, 0)
 closeButton.BackgroundColor3 = Color3.fromRGB(140, 40, 40)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "X"
-closeButton.TextColor3 = Color3.new(1,1,1)
+closeButton.TextColor3 = Color3.new(1, 1, 1)
 closeButton.TextSize = 16
 closeButton.Parent = frame
 
@@ -51,7 +51,7 @@ runButton.Position = UDim2.fromOffset(20, 45)
 runButton.BackgroundColor3 = Color3.fromRGB(70, 110, 150)
 runButton.BorderSizePixel = 0
 runButton.Text = "Déclencher l'Event"
-runButton.TextColor3 = Color3.new(1,1,1)
+runButton.TextColor3 = Color3.new(1, 1, 1)
 runButton.TextSize = 16
 runButton.Parent = frame
 
@@ -61,7 +61,7 @@ saveCheckpointButton.Position = UDim2.fromOffset(20, 95)
 saveCheckpointButton.BackgroundColor3 = Color3.fromRGB(60, 140, 80)
 saveCheckpointButton.BorderSizePixel = 0
 saveCheckpointButton.Text = "Sauver Checkpoint"
-saveCheckpointButton.TextColor3 = Color3.new(1,1,1)
+saveCheckpointButton.TextColor3 = Color3.new(1, 1, 1)
 saveCheckpointButton.TextSize = 14
 saveCheckpointButton.Parent = frame
 
@@ -71,7 +71,7 @@ teleportButton.Position = UDim2.fromOffset(165, 95)
 teleportButton.BackgroundColor3 = Color3.fromRGB(140, 100, 50)
 teleportButton.BorderSizePixel = 0
 teleportButton.Text = "TP Checkpoint"
-teleportButton.TextColor3 = Color3.new(1,1,1)
+teleportButton.TextColor3 = Color3.new(1, 1, 1)
 teleportButton.TextSize = 14
 teleportButton.Parent = frame
 
@@ -80,7 +80,7 @@ coordsLabel.Size = UDim2.fromOffset(280, 40)
 coordsLabel.Position = UDim2.fromOffset(20, 140)
 coordsLabel.BackgroundTransparency = 1
 coordsLabel.Text = "Coordonnées : ..."
-coordsLabel.TextColor3 = Color3.new(1,1,1)
+coordsLabel.TextColor3 = Color3.new(1, 1, 1)
 coordsLabel.TextSize = 14
 coordsLabel.TextWrapped = true
 coordsLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -91,7 +91,7 @@ statusLabel.Size = UDim2.fromOffset(280, 35)
 statusLabel.Position = UDim2.fromOffset(20, 185)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Prêt"
-statusLabel.TextColor3 = Color3.new(1,1,1)
+statusLabel.TextColor3 = Color3.new(1, 1, 1)
 statusLabel.TextSize = 14
 statusLabel.TextWrapped = true
 statusLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -194,6 +194,13 @@ local function runSequence()
 	local network = packages:WaitForChild("Network")
 	local kickEvent = network:WaitForChild("rev_KickEvent")
 	local ballKick = network:WaitForChild("rev_ballKick")
+
+	statusLabel.Text = "TP avant tir"
+	local hrp = getRootPart()
+	local currentPos = hrp.Position
+	hrp.CFrame = CFrame.new(702.90, currentPos.Y, currentPos.Z) * (hrp.CFrame - hrp.Position)
+
+	task.wait(0.2)
 
 	statusLabel.Text = "rev_KickEvent envoyé"
 	kickEvent:FireServer(1, 1)
