@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 if not player then return end
@@ -18,7 +19,7 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(280, 150)
+frame.Size = UDim2.fromOffset(320, 240)
 frame.Position = UDim2.fromScale(0.5, 0.45)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -26,7 +27,7 @@ frame.BorderSizePixel = 0
 frame.Parent = screenGui
 
 local titleBar = Instance.new("TextButton")
-titleBar.Size = UDim2.fromOffset(280, 30)
+titleBar.Size = UDim2.fromOffset(320, 30)
 titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 titleBar.BorderSizePixel = 0
 titleBar.Text = "Kick Event Menu"
@@ -36,7 +37,7 @@ titleBar.Parent = frame
 
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.fromOffset(30, 30)
-closeButton.Position = UDim2.fromOffset(250, 0)
+closeButton.Position = UDim2.fromOffset(290, 0)
 closeButton.BackgroundColor3 = Color3.fromRGB(140, 40, 40)
 closeButton.BorderSizePixel = 0
 closeButton.Text = "X"
@@ -45,8 +46,8 @@ closeButton.TextSize = 16
 closeButton.Parent = frame
 
 local runButton = Instance.new("TextButton")
-runButton.Size = UDim2.fromOffset(240, 42)
-runButton.Position = UDim2.fromOffset(20, 50)
+runButton.Size = UDim2.fromOffset(280, 40)
+runButton.Position = UDim2.fromOffset(20, 45)
 runButton.BackgroundColor3 = Color3.fromRGB(70, 110, 150)
 runButton.BorderSizePixel = 0
 runButton.Text = "Déclencher l'Event"
@@ -54,14 +55,46 @@ runButton.TextColor3 = Color3.new(1,1,1)
 runButton.TextSize = 16
 runButton.Parent = frame
 
+local saveCheckpointButton = Instance.new("TextButton")
+saveCheckpointButton.Size = UDim2.fromOffset(135, 36)
+saveCheckpointButton.Position = UDim2.fromOffset(20, 95)
+saveCheckpointButton.BackgroundColor3 = Color3.fromRGB(60, 140, 80)
+saveCheckpointButton.BorderSizePixel = 0
+saveCheckpointButton.Text = "Sauver Checkpoint"
+saveCheckpointButton.TextColor3 = Color3.new(1,1,1)
+saveCheckpointButton.TextSize = 14
+saveCheckpointButton.Parent = frame
+
+local teleportButton = Instance.new("TextButton")
+teleportButton.Size = UDim2.fromOffset(135, 36)
+teleportButton.Position = UDim2.fromOffset(165, 95)
+teleportButton.BackgroundColor3 = Color3.fromRGB(140, 100, 50)
+teleportButton.BorderSizePixel = 0
+teleportButton.Text = "TP Checkpoint"
+teleportButton.TextColor3 = Color3.new(1,1,1)
+teleportButton.TextSize = 14
+teleportButton.Parent = frame
+
+local coordsLabel = Instance.new("TextLabel")
+coordsLabel.Size = UDim2.fromOffset(280, 40)
+coordsLabel.Position = UDim2.fromOffset(20, 140)
+coordsLabel.BackgroundTransparency = 1
+coordsLabel.Text = "Coordonnées : ..."
+coordsLabel.TextColor3 = Color3.new(1,1,1)
+coordsLabel.TextSize = 14
+coordsLabel.TextWrapped = true
+coordsLabel.TextXAlignment = Enum.TextXAlignment.Left
+coordsLabel.Parent = frame
+
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.fromOffset(240, 30)
-statusLabel.Position = UDim2.fromOffset(20, 100)
+statusLabel.Size = UDim2.fromOffset(280, 35)
+statusLabel.Position = UDim2.fromOffset(20, 185)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Text = "Prêt"
 statusLabel.TextColor3 = Color3.new(1,1,1)
 statusLabel.TextSize = 14
 statusLabel.TextWrapped = true
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
 statusLabel.Parent = frame
 
 closeButton.MouseButton1Click:Connect(function()
@@ -105,7 +138,47 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
+local savedCheckpoint = nil
 local running = false
+
+local function getCharacter()
+	return player.Character or player.CharacterAdded:Wait()
+end
+
+local function getRootPart()
+	local character = getCharacter()
+	return character:FindFirstChild("HumanoidRootPart") or character:WaitForChild("HumanoidRootPart")
+end
+
+RunService.RenderStepped:Connect(function()
+	local hrp = getRootPart()
+	if hrp then
+		local pos = hrp.Position
+		coordsLabel.Text = string.format("Coordonnées : X %.2f | Y %.2f | Z %.2f", pos.X, pos.Y, pos.Z)
+	end
+end)
+
+saveCheckpointButton.MouseButton1Click:Connect(function()
+	local hrp = getRootPart()
+	if hrp then
+		savedCheckpoint = hrp.CFrame
+		local pos = hrp.Position
+		statusLabel.Text = string.format("Checkpoint sauvé : %.2f, %.2f, %.2f", pos.X, pos.Y, pos.Z)
+	end
+end)
+
+teleportButton.MouseButton1Click:Connect(function()
+	if not savedCheckpoint then
+		statusLabel.Text = "Aucun checkpoint sauvé"
+		return
+	end
+
+	local character = getCharacter()
+	if character then
+		character:PivotTo(savedCheckpoint)
+		statusLabel.Text = "Téléporté au checkpoint"
+	end
+end)
 
 local function runSequence()
 	if running then
@@ -126,11 +199,9 @@ local function runSequence()
 	kickEvent:FireServer(1, 1)
 
 	for t = 27, 1, -1 do
-		statusLabel.Text = "Attente "..t.."s"
+		statusLabel.Text = "Attente " .. t .. "s"
 		task.wait(1)
 	end
-
-	statusLabel.Text = "Envoi rev_ballKick 100 -> 1"
 
 	for i = 100, 1, -1 do
 		ballKick:FireServer(i)
