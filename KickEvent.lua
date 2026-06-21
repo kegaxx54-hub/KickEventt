@@ -1,59 +1,44 @@
-local userInterface = game:GetService("UserInterface")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Créez ou référez votre menu déplacable ici. Assurez-vous qu'il soit déjà dans votre jeu Roblox.
-local sideMenu = --[Enter your sideMenu instance here]--
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
-if not sideMenu then 
-    warn("SideMenu not found, please create a ScreenGui and put it in the UserInterface service.")
-    return
-end
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KickGui"
+screenGui.Parent = playerGui
 
--- Créez un bouton et ajoutez-le à votre menu déplacable.
 local kickButton = Instance.new("TextButton")
-kickButton.Size = UDim2(0.15, 0) -- Hauteur: 15% de l'élément parent, Largeur: ajuster selon vos besoins
-kickButton.Position = UDim2(0.42, 0) -- Position relative au menu déplacable
-
--- Texte du bouton
+kickButton.Size = UDim2.fromScale(0.15, 0.08)
+kickButton.Position = UDim2.fromScale(0.42, 0.45)
 kickButton.Text = "Déclencher l'Event"
-kickButton.FontSize = Enum.FontSize.Size14
+kickButton.TextSize = 14
 kickButton.TextColor3 = Color3.new(1, 1, 1)
 kickButton.BackgroundColor3 = Color3.new(0.4, 0.5, 0.6)
+kickButton.Parent = screenGui
 
--- Ajoutez le bouton à votre menu déplacable.
-kickButton.Parent = sideMenu
+local function callRevBallKick(delayTime)
+	task.wait(delayTime)
 
--- Fonction appelée lorsque l'utilisateur clique sur le bouton
+	local event = ReplicatedStorage.Shared.Packages.Network:FindFirstChild("rev_ballKick")
+	if event then
+		event:FireServer(100)
+
+		for i = 100, 1, -1 do
+			task.wait(0.1)
+			event:FireServer(i)
+		end
+	end
+end
+
 local function triggerKickEvent()
-    local Event = game:GetService("ReplicatedStorage").Shared.Packages.Network.rev_KickEvent -- Assurez-vous que ce service est bien configuré
-    Event:FireServer(1, 1)
-    
-    callRevBallKick(27) -- Appel de la fonction pour déclencher le processus après délai.
+	local event = ReplicatedStorage.Shared.Packages.Network:FindFirstChild("rev_KickEvent")
+	if event then
+		event:FireServer(1, 1)
+		callRevBallKick(27)
+	else
+		warn("rev_KickEvent introuvable")
+	end
 end
 
--- Fonction appelée par le bouton
 kickButton.MouseButton1Click:Connect(triggerKickEvent)
-
--- La fonction d'appel récursif pour l'événement rev_ballKick
-function callRevBallKick(delay)
-    local countdown = delay
-    while countdown ~= 0 do
-        wait(1) -- Attend une seconde
-        countdown = countdown - 1
-    end
-    
-    local Event = game:GetService("ReplicatedStorage").Shared.Packages.Network.rev_ballKick
-
-    -- Appel de l'événement rev_ballKick avec le numéro spécifié.
-    Event:FireServer(100)
-    
-    -- Appeler rev_KickEvent à partir de 100 jusqu'à 1 en diminuant d'un par tour
-    for i = 100, 1, -1 do
-        wait(delay) -- Attend le délai avant chaque appel
-        if i > 0 then
-            Event:FireServer(i)
-        end
-    end
-end
-
--- Initialisation du processus de kick.
-triggerKickEvent()
